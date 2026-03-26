@@ -12,7 +12,6 @@ Open and visualize FITS, XISF, and TIFF files from your phone.
 [![Platform](https://img.shields.io/badge/Platform-Android-3DDC84?style=flat-square&logo=android&logoColor=white)](https://www.android.com)
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9-7F52FF?style=flat-square&logo=kotlin&logoColor=white)](https://kotlinlang.org)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material3-4285F4?style=flat-square&logo=jetpackcompose&logoColor=white)](https://developer.android.com/jetpack/compose)
-[![GitHub release](https://img.shields.io/github/v/release/Ft2801/AstroView?style=flat-square&color=orange)](https://github.com/Ft2801/AstroView/releases)
 
 </div>
 
