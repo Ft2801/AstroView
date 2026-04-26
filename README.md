@@ -24,8 +24,8 @@ decoding and the auto-stretch algorithm are implemented natively in Kotlin.
 
 AstroView supports FITS and XISF files only. The following hard limits apply to every file opened:
 
-- Maximum file size: 50 MB
-- Maximum image resolution: 10 megapixels (width x height)
+- Maximum file size: 80 MB
+- Maximum image resolution: 15 megapixels (width x height)
 
 Files exceeding either limit will be rejected with an explicit error message. These constraints
 exist to protect device memory and ensure a responsive user experience on a wide range of Android
@@ -175,7 +175,7 @@ Release builds require a signing key. See the
 ## Usage
 
 1. Open the app and tap the Open button.
-2. Select a FITS or XISF file from your device. Files must not exceed 50 MB or 10 megapixels.
+2. Select a FITS or XISF file from your device. Files must not exceed 80 MB or 15 megapixels.
 3. The image loads and displays in its original linear state.
 4. Tap STF to toggle the auto-stretch. The image becomes visually interpretable instantly.
 5. Use Rot L and Rot R to rotate, and Flip H and Flip V to mirror the image.

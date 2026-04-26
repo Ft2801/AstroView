@@ -10,7 +10,7 @@ import java.io.BufferedInputStream
  *
  * Responsibilities:
  * - Resolve the file name from the content URI.
- * - Enforce the file size limit (50 MB) and resolution limit (10 megapixels).
+ * - Enforce the file size limit (80 MB) and resolution limit (15 megapixels).
  * - Detect the image format via magic bytes or file extension.
  * - Delegate decoding to the appropriate format-specific decoder.
  *
@@ -18,11 +18,11 @@ import java.io.BufferedInputStream
  */
 object ImageDecoder {
 
-    /** Maximum allowed file size in bytes (50 MB). */
-    private const val MAX_FILE_SIZE_BYTES = 50L * 1024L * 1024L
+    /** Maximum allowed file size in bytes (80 MB). */
+    private const val MAX_FILE_SIZE_BYTES = 80L * 1024L * 1024L
 
-    /** Maximum allowed image resolution in total pixels (10 megapixels). */
-    private const val MAX_PIXELS = 10_000_000L
+    /** Maximum allowed image resolution in total pixels (15 megapixels). */
+    private const val MAX_PIXELS = 15_000_000L
 
     /**
      * Decodes the image at the given URI and returns a normalized AstroImage.
@@ -36,12 +36,12 @@ object ImageDecoder {
     fun decode(context: Context, uri: Uri): AstroImage {
         val name = getFileName(context, uri).lowercase()
 
-        // Enforce the 50 MB file size limit before reading any pixel data.
+        // Enforce the 80 MB file size limit before reading any pixel data.
         val fileSize = getFileSize(context, uri)
         if (fileSize > MAX_FILE_SIZE_BYTES) {
             val sizeMb = fileSize / (1024.0 * 1024.0)
             throw IllegalArgumentException(
-                "File too large (%.1f MB). Maximum supported size is 50 MB.".format(sizeMb)
+                "File too large (%.1f MB). Maximum supported size is 80 MB.".format(sizeMb)
             )
         }
 
@@ -67,11 +67,11 @@ object ImageDecoder {
             }
         }
 
-        // Enforce the 10 megapixel resolution limit after decoding the header.
+        // Enforce the 15 megapixel resolution limit after decoding the header.
         val totalPixels = image.width.toLong() * image.height.toLong()
         if (totalPixels > MAX_PIXELS) {
             throw IllegalArgumentException(
-                "Image resolution too large (%dx%d, %.1f MP). Maximum is 10 megapixels.".format(
+                "Image resolution too large (%dx%d, %.1f MP). Maximum is 15 megapixels.".format(
                     image.width,
                     image.height,
                     totalPixels / 1_000_000.0

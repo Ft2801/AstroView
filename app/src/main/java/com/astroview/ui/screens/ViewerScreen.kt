@@ -228,7 +228,7 @@ private fun EmptyState(onOpenFile: () -> Unit) {
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text      = "Maximum 50 MB per file, 10 megapixels per image.",
+            text      = "Maximum 80 MB per file, 15 megapixels per image.",
             style     = MaterialTheme.typography.labelSmall,
             color     = StarDim,
             textAlign = TextAlign.Center
