@@ -1,0 +1,78 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - main
+      - master
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build and Sign Release APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission to Gradle wrapper
+        run: chmod +x gradlew
+
+      - name: Generate Android Launcher Icons
+        run: |
+          sudo apt-get install -y imagemagick
+          declare -A adaptive_sizes=( ["mdpi"]=108 ["hdpi"]=162 ["xhdpi"]=216 ["xxhdpi"]=324 ["xxxhdpi"]=432 )
+          declare -A legacy_sizes=( ["mdpi"]=48 ["hdpi"]=72 ["xhdpi"]=96 ["xxhdpi"]=144 ["xxxhdpi"]=192 )
+          BG_COLOR="#0D1117"
+
+          for density in "${!adaptive_sizes[@]}"; do
+            a_size=${adaptive_sizes[$density]}
+            l_size=${legacy_sizes[$density]}
+            inner_a=$(python3 -c "print(int($a_size * 0.9))")
+            inner_l=$(python3 -c "print(int($l_size * 0.9))")
+            convert logo.png -resize ${inner_a}x${inner_a} -background none -gravity center -extent ${a_size}x${a_size} app/src/main/res/mipmap-${density}/ic_launcher_foreground.webp
+            convert logo.png -resize ${inner_l}x${inner_l} -background "$BG_COLOR" -gravity center -extent ${l_size}x${l_size} app/src/main/res/mipmap-${density}/ic_launcher.webp
+            cp app/src/main/res/mipmap-${density}/ic_launcher.webp app/src/main/res/mipmap-${density}/ic_launcher_round.webp
+          done
+
+      - name: Build release APK
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Sign release APK
+        uses: r0adkll/sign-android-release@v1
+        id: sign_apk
+        with:
+          releaseDirectory: app/build/outputs/apk/release
+          signingKeyBase64: ${{ secrets.SIGNING_KEY_BASE64 }}
+          alias: ${{ secrets.KEY_ALIAS }}
+          keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
+          keyPassword: ${{ secrets.KEY_PASSWORD }}
+        env:
+          BUILD_TOOLS_VERSION: "34.0.0"
+
+      - name: Rename signed APK
+        run: |
+          VERSION_NAME=$(grep versionName app/build.gradle.kts | sed 's/.*"\(.*\)".*/\1/')
+          cp "${{ steps.sign_apk.outputs.signedReleaseFile }}" \
+             "app/build/outputs/apk/release/AstroView-v${VERSION_NAME}.apk"
+
+      - name: Upload release APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AstroView-release-signed
+          path: app/build/outputs/apk/release/AstroView-v*.apk
+          retention-days: 90
